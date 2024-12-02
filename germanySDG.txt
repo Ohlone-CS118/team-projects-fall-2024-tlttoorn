@@ -1,0 +1,43 @@
+Germany:
+
+No Poverty:
+Achieved: 
+- In 2024, 0.34% of the population was making $3.65/day (living in extreme poverty)
+Major Challenges remaining: 
+- 11.60% of the population lives in poverty after taxes and transfers
+
+Zero Hunger:
+Achieved:
+- 0.4% of children under 5 y/o considered underweight for their height(s)
+- 2.5% of population is considered undernourished
+Major Challenges Remaining:
+- 20.4% of the adult population is considered obese (BMI>=30)
+- More efficient use of Nitrogen (on a scale from 0-1, Germany scored 0.67)
+- Exports of hazardous pesticides 
+
+Good Health and Well-Being:
+Achieved: 
+- Maternal - Mortality ratio of 4.43 per 100000 live births
+- Age standardized death rates due to pollution is 15 per 100000 people
+- 3.3 traffic deaths per 100000 people
+- Subjective health is rated as 6.79/10 (survey based)
+Challenges remaining:
+- 96.3% of births were attended by a skilled health personnel
+- There is a 5.85 year gap in life expectancy at birth (among regions)
+	
+Quality Education:
+Achieved: 
+- The net primary school enrollment rate is 98.54%
+- The participation in pre-primary school programs is 96.09% of children aged 4-6
+- (Lower secondary education) Middle school completion rate is 98.7%
+Challenges:
+- 37.28% of the population go on to completing a degree of sorts (Higher Education)
+- 29.51% of 15 y/o’s are underachievers in math
+
+Climate Action:
+Achieved:
+- The carbon pricing score (Euros/tCO2) on a scale of 0-100 is 73.27%
+Major Challenges Remaining:
+- CO2 emissions from fossil fuel exports is ~158.43 kg per capita
+- CO2 emissions from fossil fuels is about 7.98 tons of CO2 per capita
+- Greenhouse Gas emissions is 7.17 tCO2 per capita

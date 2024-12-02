@@ -1,0 +1,35 @@
+Peru:
+
+No Poverty:
+Major Challenges remaining: 
+- In 2024, 11.75% of the population was making $3.65/day (living in extreme poverty)
+
+Zero Hunger:
+Achieved:
+- 0.4% of children under 5 y/o considered underweight for their height(s)
+- 7.0% of population is considered undernourished
+Major Challenges Remaining:
+- 27.29% of the adult population is considered obese (BMI>=30)
+- More efficient use of Nitrogen (on a scale from 0-1, Peru scored 0.78)
+- Exports of hazardous pesticides 
+
+Good Health and Well-Being:
+Achieved: 
+- Maternal - Mortality ratio of 68.54 per 100000 live births
+Challenges remaining:
+- Age standardized death rates due to pollution is 38 per 100000 people
+- 12.7 traffic deaths per 100000 people
+- Subjective health is rated as 5.94/10 (survey based)
+	
+Quality Education:
+Achieved: 
+- (Lower secondary education) Middle school completion rate is 90.15%
+- Participation rate in pre-primary school programs is 99.55% of children aged 4-6
+- Net primary school enrollment rate is 99.74%
+
+Climate Action:
+Achieved:
+- CO2 emissions from fossil fuels is about 1.8 tons of CO2 per capita
+Major Challenges Remaining:
+- Greenhouse Gas emissions is 1.45 tCO2 per capita
+- CO2 emissions from fossil fuels is about 1.8 tons of CO2 per capita
