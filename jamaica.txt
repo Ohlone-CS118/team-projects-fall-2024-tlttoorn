@@ -1,0 +1,41 @@
+Jamaica:
+
+No Poverty:
+Achieved: 
+- In 2024, 1.99% of the population was making $2.15/day (living in extreme poverty)
+Major Challenges remaining: 
+- In 2024, 7.22% of the population was making $3.65/day (living in extreme poverty)
+
+Zero Hunger:
+Achieved:
+- 3.2% of children under 5 y/o considered underweight for their height(s)
+- Exports of hazardous pesticides 
+Major Challenges Remaining:
+- 8.3% of population is considered undernourished
+- 33.81% of the adult population is considered obese (BMI>=30)
+- More efficient use of Nitrogen (on a scale from 0-1, Jamaica scored 0.85)
+
+Good Health and Well-Being:
+Achieved: 
+- 99.8% of births are attended by skilled health personnel
+- 3.2/100000 population have tuberculosis
+Challenges remaining:
+- 17.8 traffic deaths per 100000 people
+- Age standardized death rates due to pollution is 36 per 100000 people
+- Maternal - Mortality ratio of 98.88 per 100000 live births
+- Subjective health is rated as 5.87/10 (survey based)
+	
+Quality Education:
+Achieved: 
+- Students who are sub-par in math is 11.96% of 15-year-olds
+- Participation rate in pre-primary school programs is 93.61% of children aged 4-6
+Challenges:
+- (Lower secondary education) Middle school completion rate is 84.45%
+- Net primary school enrollment rate is 90.42%
+
+Climate Action:
+Achieved:
+- CO2 emissions from fossil fuel exports is ~0 kg per capita
+Major Challenges Remaining:
+- CO2 emissions from fossil fuels is about 2.29 tons of CO2 per capita
+- Greenhouse Gas emissions is 2.68 tCO2 per capita

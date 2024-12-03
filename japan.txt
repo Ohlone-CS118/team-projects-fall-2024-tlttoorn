@@ -1,0 +1,36 @@
+Japan:
+
+No Poverty:
+Achieved: 
+- In 2024, 0.49% of the population was making $3.65/day (living in extreme poverty)
+Major Challenges remaining: 
+- 15.70% of the population lives in poverty after taxes and transfers
+
+Zero Hunger:
+Achieved:
+- 5.54% of the adult population is considered obese (BMI>=30)
+- 2.3% of children under 5 y/o considered underweight for their height(s)
+- 3.2% of population is considered undernourished
+Major Challenges Remaining:
+- More efficient use of Nitrogen (on a scale from 0-1, Japan scored 0.82)
+- Exports of hazardous pesticides 
+
+Good Health and Well-Being:
+Achieved: 
+- Maternal - Mortality ratio of 4.31 per 100000 live births
+- Age standardized death rates due to pollution is 12 per 100000 people
+- 2.7 traffic deaths per 100000 people
+Challenges remaining:
+- Subjective health is rated as 5.91/10 (survey based)
+	
+Quality Education:
+Achieved: 
+- Students who are sub-par in math is 11.96% of 15-year-olds
+- (Lower secondary education) Middle school completion rate is 100%
+- 65% of people of age 25-34 attain a higher education (i.e. Bachelor’s, Masters, etc.)
+Climate Action:
+Achieved:
+- CO2 emissions from fossil fuel exports is ~0.26 kg per capita
+Major Challenges Remaining:
+- CO2 emissions from fossil fuels is about 8.48 tons of CO2 per capita
+- Greenhouse Gas emissions is 5.07 tCO2 per capita
