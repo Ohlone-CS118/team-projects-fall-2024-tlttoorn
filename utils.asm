@@ -1,11 +1,14 @@
 .include "definitions.asm"
 .data
+	.extern inputBuffer INPUT_BUFFER_SPACE
 	.extern imageDirectory 8
 	.extern partBuffer 4
 	.extern partExtension 6
 	
-	.extern stencilDirectory 10
-	.extern stencilExtension 7
+	.extern dataBuffer DATA_BUFFER_SPACE
+	.extern dataDirectory 6
+	.extern dataExtension 5
+	
 	.eqv MARGIN_OF_SAFETY 20
 
 	.macro return
@@ -260,7 +263,7 @@
 	la $t0 stencilList
 	add $t0 $t0 $a0
 	lw $t0 ($t0)
-	mul $a0 inputBufferOffset 14
+	mul $a0 inputBufferOffset CHARACTER_SPACING
 	addi $a0 $a0 TYPING_CORNER_X
 	li $a1 TYPING_CORNER_Y
 	addi $t1 $t0 STENCIL_SIZE
@@ -284,7 +287,7 @@
 	j drawing_loop
 	wrap_around:
 	addi $a1 $a1 1
-	mul $a0 inputBufferOffset 14
+	mul $a0 inputBufferOffset CHARACTER_SPACING
 	addi $a0 $a0 TYPING_CORNER_X
 	j drawing_loop
 	end:
@@ -312,6 +315,15 @@
 	syscall
 	.end_macro
 
+	# Closes a file from a provided descriptor
+	# Precondition: %file is a file descriptor provided by syscall 13
+	# Postcondition: File is now closed
+	.macro close_file(%file)
+	li $v0 16
+	move $a0 %file
+	syscall
+	.end_macro
+	
 	# Display the compiled image from the provided path
 	# Precondition: %directory is a string path
 	# Postcondition: Image is loaded into display buffer
@@ -344,14 +356,76 @@
 	pop($t0)
 	blt $t2 LINE_COUNT fix_endian_loop
 	.end_macro
-
-	# Closes a file from a provided descriptor
-	# Precondition: %file is a file descriptor provided by syscall 13
-	# Postcondition: File is now closed
-	.macro close_file(%file)
-	li $v0 16
-	move $a0 %file
+	
+	.macro display_info(%buffer_lab)
+	la $a0 %buffer_lab
+	la $a1 inputBuffer
+	drawing_loop:
+	lb $t0 ($a0)
+	lower($t0)
+	sb $t0 ($a1)
+	beqz $t0 end_draw
+	addi $a0 $a0 1
+	addi $a1 $a1 1
+	push($a0)
+	push($a1)
+	draw_input($t0)
+	addi inputBufferOffset inputBufferOffset 1
+	is_time()
+	pop($a1)
+	pop($a0)
+	j drawing_loop
+	end_draw:
+	li inputBufferOffset 0
+	.end_macro
+	
+	.macro clear_input()
+	li inputBufferOffset INPUT_BUFFER_SPACE
+	subi inputBufferOffset inputBufferOffset 1
+	clear_loop:
+	backspace()
+	is_time()
+	bgtz inputBufferOffset clear_loop
+	.end_macro
+	
+	.macro backspace()
+	subi inputBufferOffset inputBufferOffset 1
+	li $t0 123
+	draw_input($t0)
+	append_char($zero, inputBuffer, inputBufferOffset)
+	.end_macro
+	
+	.macro print_data(%buffer_lab)
+	push($a0)
+	append(dataDirectory, finalPath, 0)
+	pop($a0)
+	push($v0)
+	append(%buffer_lab, finalPath, $v0)
+	pop($v1)
+	add $v0 $v0 $v1
+	subi $v0 $v0 1
+	append(dataExtension, finalPath, $v0)
+	la $a0 finalPath
+	file_open_read($a0)
+	move $a0 $v0
+	
+	li $v0 14
+	la $a1 dataBuffer
+	li $a2 DATA_BUFFER_SPACE
 	syscall
+	
+	add $a1 $a1 $v0
+	sb $zero ($a1)
+	
+	close_file($a0)
+	
+	is_time()
+	
+	li $v0 4
+	la $a0 dataBuffer
+	syscall
+	
+	is_time()
 	.end_macro
 
 .text

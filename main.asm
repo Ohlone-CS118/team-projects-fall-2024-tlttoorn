@@ -1,21 +1,29 @@
 .include "utils.asm"
 # TODO
-# Load in stensil functions
-# Better substring search to return the country with the earliest occurence of a specific index
-# Print country strings
+# Disable most inputs when country is loaded
+# Create a confirmation message and location on map
+# Load in txt file to print
 
 
 .data
+	.globl finalPath
+	finalPath: .space 70
+	
 	inputBuffer: .space INPUT_BUFFER_SPACE
+	
 	imageDirectory: .asciiz "images/"
+	mapDirectory: .asciiz "world_map/"
+	dataDirectory: .asciiz "data/"
+	
 	partBuffer: .space 4
 	partExtension: .asciiz ".part"
-	.globl finalPath
-	finalPath: .space 50
-	mapDirectory: .asciiz "world_map/"
-	removed: .asciiz "removed"
-	input_info: .asciiz "Enter a country or press escape"
-	return_info: .asciiz "Press enter to return"
+	dataExtension: .asciiz ".txt"
+	
+	dataLocation: .space DATA_BUFFER_SPACE
+	
+	inputInfo: .asciiz "Type in a country or press the esc key to exit"
+	returnInfo: .asciiz "Press enter to return or the esc key to exit"
+	notFoundInfo: .asciiz "Country data not found   Please try again"
 
 .text
 
@@ -27,45 +35,48 @@ main:
 	set_time()
 	malloc(IMAGE_SIZE)
 	read_image(mapDirectory)
+	display_info(inputInfo)
 	enable_keyboard()
 	busy_waiting:
 	is_time()
 	bnez lastKeyPressed handle_input
 	j busy_waiting
+	busy_waiting_but_worse:
+	is_time()
+	bnez lastKeyPressed return_input
+	j busy_waiting_but_worse
 
 handle_input:
 	disable_keyboard()
-	beq lastKeyPressed 8 backspace
+	li $t0 INPUT_BUFFER_SPACE
+	subi $t0 $t0 1
+	
 	beq lastKeyPressed 10 search
 	beq lastKeyPressed 27 exit_program
-	beq inputBufferOffset INPUT_BUFFER_SPACE restore_keyboard
+	beq lastKeyPressed 8 backspace
+	beq inputBufferOffset $t0 restore_keyboard
+	
 	lower(lastKeyPressed)
 	validate_input(lastKeyPressed)
 	beqz lastKeyPressed restore_keyboard
+	bgtz inputBufferOffset skip_clear
+	clear_input()
+skip_clear:
+	draw_input(lastKeyPressed)
 	append_char(lastKeyPressed, inputBuffer, inputBufferOffset)
 	addi inputBufferOffset inputBufferOffset 1
-	draw_input(lastKeyPressed)
-	
-	li $v0 11
-	move $a0 lastKeyPressed
-	syscall
 	
 	j restore_keyboard
 	
 backspace:
 	beqz inputBufferOffset restore_keyboard
-	li $t0 123
-	draw_input($t0)
-	subi inputBufferOffset inputBufferOffset 1
-	append_char($zero, inputBuffer, inputBufferOffset)
-	
-	li $v0 4
-	la $a0 removed
-	syscall
+	backspace()
+	beqz inputBufferOffset restore_info
 	
 	j restore_keyboard
 	
 search:
+	beqz inputBufferOffset restore_keyboard
 	la $t0 inputBuffer
 	add $t0 $t0 inputBufferOffset
 	sb $zero ($t0)
@@ -91,16 +102,42 @@ search:
 	
 	end_search:
 	jal get_likely_country
-	beq $v0 -1 restore_keyboard
+	beq $v0 -1 country_not_found
 	mul $v0 $v0 4
 	destroy(COUNTRY_COUNT)
 	la $t0 countries
 	add $t0 $t0 $v0
 	lw $t0 ($t0)
+	push($t0)
+	clear_input()
+	pop($t0)
 	directory_conversion($t0, inputBuffer)
 	read_image(inputBuffer)
-	j restore_keyboard
+	is_time()
+	print_data(inputBuffer)
+	display_info(returnInfo)
+	move lastKeyPressed $zero
+	enable_keyboard()
+	j busy_waiting_but_worse
 
+country_not_found:
+	clear_input()
+	display_info(notFoundInfo)
+	j restore_keyboard
+	
+return_input:
+	disable_keyboard()
+	
+	beq lastKeyPressed 27 exit_program
+	beq lastKeyPressed 10 restore_map
+	move lastKeyPressed $zero
+	enable_keyboard()
+	j busy_waiting_but_worse
+
+restore_map:	
+	read_image(mapDirectory)
+restore_info:
+	display_info(inputInfo)
 restore_keyboard:
 	move lastKeyPressed $zero
 	enable_keyboard()
@@ -202,7 +239,7 @@ __keyboard_interrupt:
 	# Use the MARS built-in system call 11 (print char) to print the character
 	# from receiver data.
 	
-	move lastKeyPressed $k1 
+	move lastKeyPressed $k1
 	
 	j __resume
 	
