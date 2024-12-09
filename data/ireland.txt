@@ -24,7 +24,7 @@ Achieved:
 Quality Education:
 Achieved: 
 - (Lower secondary education) Middle school completion rate is 100.05%
-- 63.27% of people of age 25-34 attain a higher education (i.e. Bachelor’s, Masters, etc.)
+- 63.27% of people of age 25-34 attain a higher education (i.e. Bachelor's, Masters, etc.)
 Challenges:
 - Students who are sub-par in math is 19.03% of 15-year-olds
 
@@ -34,3 +34,5 @@ Achieved:
 Major Challenges Remaining:
 - CO2 emissions from fossil fuels is about 7.75 tons of CO2 per capita
 - Greenhouse Gas emissions is 14.14 tCO2 per capita
+
+______________________________________________________________________________________________

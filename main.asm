@@ -1,151 +1,165 @@
+# Main: Angel & Daniel
+# Inputs: Daniel
 .include "utils.asm"
-# TODO
-# Disable most inputs when country is loaded
-# Create a confirmation message and location on map
-# Load in txt file to print
 
 
 .data
 	.globl finalPath
-	finalPath: .space 70
+	finalPath: .space 70													# Utilized for directory traversal
 	
-	inputBuffer: .space INPUT_BUFFER_SPACE
+	inputBuffer: .space INPUT_BUFFER_SPACE									# Utilized for user input
 	
 	imageDirectory: .asciiz "images/"
-	mapDirectory: .asciiz "world_map/"
+	mapDirectory: .asciiz "world_map/"										# Main directory locations
 	dataDirectory: .asciiz "data/"
 	
 	partBuffer: .space 4
-	partExtension: .asciiz ".part"
+	partExtension: .asciiz ".part"											# Used for file extensions and numberings
 	dataExtension: .asciiz ".txt"
 	
-	dataLocation: .space DATA_BUFFER_SPACE
+	dataLocation: .space DATA_BUFFER_SPACE									# Preallocated space for txt information
 	
 	inputInfo: .asciiz "Type in a country or press the esc key to exit"
-	returnInfo: .asciiz "Press enter to return or the esc key to exit"
+	returnInfo: .asciiz "Press enter to return or the esc key to exit"		# Information to display at the top as text
 	notFoundInfo: .asciiz "Country data not found   Please try again"
 
 .text
 
 .globl main
 main:
-	move $fp $sp
-	start_music()
-	jal load_letters
-	set_time()
-	malloc(IMAGE_SIZE)
-	read_image(mapDirectory)
-	display_info(inputInfo)
-	enable_keyboard()
+	move $fp $sp				# Set frame pointer to the top of the stack
+	start_music()				# Set up definitions for playing music
+	jal load_letters			# Load character stencils
+	malloc(IMAGE_SIZE)			# Allocate enough bytes for display on heap
+	read_image(mapDirectory)	# read in the map image
+	print_data(mapDirectory)
+	display_info(inputInfo)		# Display input info as text at the top of display
+	enable_keyboard()			# Enable the keyboard
 	busy_waiting:
-	is_time()
-	bnez lastKeyPressed handle_input
-	j busy_waiting
+	is_time()							# Check if enough milliseconds have passed for the next note to be played
+	bnez lastKeyPressed handle_input	# Check if a key press has occured
+	j busy_waiting						# Busy wait
 	busy_waiting_but_worse:
-	is_time()
+	is_time()							# ^^^
 	bnez lastKeyPressed return_input
 	j busy_waiting_but_worse
 
+# Handles the key press provided by a keyboard interrupt
+# Preconditon: lastKeyPressed is not 0
+# Postcondition: Depending on the value of lastKeyPressed
+#			- ENTER: Search for country | If found display new image, info, and data | Else display not found info
+#			- ESC: Exit the program
+#			- BACKSPACE: Delete the last input character and clear it from the screen
+#			- Alphabet: Add character to the inputBuffer and display the character on the screen
+#			- Otherwise ignore the input
 handle_input:
-	disable_keyboard()
-	li $t0 INPUT_BUFFER_SPACE
+	disable_keyboard()					# Disable keyboard to prevent errors
+	li $t0 INPUT_BUFFER_SPACE			# Get value before buffer end reserved for the null terminator
 	subi $t0 $t0 1
 	
-	beq lastKeyPressed 10 search
-	beq lastKeyPressed 27 exit_program
-	beq lastKeyPressed 8 backspace
-	beq inputBufferOffset $t0 restore_keyboard
+	beq lastKeyPressed 10 search				# If enter is pressed search for the country
+	beq lastKeyPressed 27 exit_program			# If esc is pressed exit the program
+	beq lastKeyPressed 8 backspace				# If backspace is pressed replace buffer value and clear screen
+	beq inputBufferOffset $t0 restore_keyboard	# If at the end of buffer, ignore input
 	
-	lower(lastKeyPressed)
-	validate_input(lastKeyPressed)
-	beqz lastKeyPressed restore_keyboard
-	bgtz inputBufferOffset skip_clear
-	clear_input()
+	lower(lastKeyPressed)						# Lower the key press
+	validate_input(lastKeyPressed)				# Validate key entered is a space or an alphabetical character
+	beqz lastKeyPressed restore_keyboard		# If not valid, ignore input
+	bgtz inputBufferOffset skip_clear			# If it's the first character typed clear info stored in current buffer
+	clear_input()								# Clear the buffer and display
 skip_clear:
-	draw_input(lastKeyPressed)
-	append_char(lastKeyPressed, inputBuffer, inputBufferOffset)
-	addi inputBufferOffset inputBufferOffset 1
+	draw_input(lastKeyPressed)									# Draw the character from the associated stencil
+	append_char(lastKeyPressed, inputBuffer, inputBufferOffset)	# Append the character to the end of the input buffer
+	addi inputBufferOffset inputBufferOffset 1					# Update buffer offset
 	
-	j restore_keyboard
-	
+	j restore_keyboard							# remove register stored character and re-enable the keyboard
+
 backspace:
-	beqz inputBufferOffset restore_keyboard
-	backspace()
-	beqz inputBufferOffset restore_info
+	beqz inputBufferOffset restore_keyboard		# If input buffer is already empty, ignore input
+	backspace()									# Remove last input using backspace macro
+	beqz inputBufferOffset restore_info			# If input buffer has now become empty, display useful info on display
 	
-	j restore_keyboard
+	j restore_keyboard							# remove register stored character and re-enable the keyboard
 	
 search:
-	beqz inputBufferOffset restore_keyboard
-	la $t0 inputBuffer
-	add $t0 $t0 inputBufferOffset
-	sb $zero ($t0)
+	beqz inputBufferOffset restore_keyboard		# If the input buffer is empty, ignore search
+	la $t0 inputBuffer							# Get input buffer address
+	add $t0 $t0 inputBufferOffset				# Get end of input buffer
+	sb $zero ($t0)								# Null terminator goes at the end
 	
-	la $t0 inputBuffer
-	la $t1 countries
+	la $t0 inputBuffer							# Get start of input buffer
+	la $t1 countries							# Get list of strings of country names
 	search_loop:
-	lw $t2 ($t1)	# Get next country
-	beqz $t2 end_search
+	lw $t2 ($t1)								# Get next country (start i = 0)
+	beqz $t2 end_search							# If null terminator found, end of list, terminate search
 	push($t1)
-	push($t0)
+	push($t0)									# Store input, list, and string address on stack
 	push($t2)
-	is_time()
+	is_time()									# Check for impending note
 	top($t2)
-	below_top($t0)
-	strstr($t2, $t0)
+	below_top($t0)								# Restore input buffer and string addresses
+	strstr($t2, $t0)							# Find the substring, input buffer, in the string, country name
 	pop($t2)
-	pop($t0)
+	pop($t0)									# Restore input, list, and string address to registers
 	pop($t1)
-	push($v0)
-	addi $t1 $t1 4
-	j search_loop
+	push($v0)									# Push the index at which the substring was found (-1 if not)
+	addi $t1 $t1 4								# Get next country name address, i++
+	j search_loop								# Continue search loop
 	
 	end_search:
-	jal get_likely_country
-	beq $v0 -1 country_not_found
-	mul $v0 $v0 4
-	destroy(COUNTRY_COUNT)
+	jal get_likely_country						# Get the name of the country with the earliest returned substring
+	beq $v0 -1 country_not_found				# If none found, display not found info and clear the buffer
+	mul $v0 $v0 4								# Get the index for the country name in the country list
+	destroy(COUNTRY_COUNT)						# Destroy all pushed arguments
 	la $t0 countries
 	add $t0 $t0 $v0
-	lw $t0 ($t0)
-	push($t0)
-	clear_input()
-	pop($t0)
-	directory_conversion($t0, inputBuffer)
-	read_image(inputBuffer)
-	is_time()
-	print_data(inputBuffer)
-	display_info(returnInfo)
-	move lastKeyPressed $zero
-	enable_keyboard()
-	j busy_waiting_but_worse
+	lw $t0 ($t0)								# Access country name with index (country list[i])
+	push($t0)									# Push name address onto stack
+	clear_input()								# Clear input buffer
+	pop($t0)									# Pop name address off stack
+	directory_conversion($t0, inputBuffer)		# Get the directory of the country and store it in the input buffer
+	read_image(inputBuffer)						# Read in the country image file
+	is_time()									# Check if time to play next note
+	print_data(inputBuffer)						# Print associated country data to console
+	display_info(returnInfo)					# Display useful info at the top of the image
+	move lastKeyPressed $zero					# Clear last key press
+	enable_keyboard()							# Renable the keyboard
+	j busy_waiting_but_worse					# Enter new restricted loop
 
 country_not_found:
-	clear_input()
-	display_info(notFoundInfo)
-	j restore_keyboard
-	
-return_input:
-	disable_keyboard()
-	
-	beq lastKeyPressed 27 exit_program
-	beq lastKeyPressed 10 restore_map
-	move lastKeyPressed $zero
-	enable_keyboard()
-	j busy_waiting_but_worse
+	clear_input()								# If country not found clear buffer input
+	display_info(notFoundInfo)					# Display not found information at the top of the display
+	j restore_keyboard							# remove register stored character and re-enable the keyboard
 
+# A modified version of handle input specifically for returning to the world map and restricting input
+# Preconditon: lastKeyPressed is ESC or ENTER
+# Postcondition: ESC closes the program and ENTER return back to the world map / main screen
+return_input:
+	disable_keyboard()							# While in the restricted loop disable the keyboard to prevent errors
+	
+	beq lastKeyPressed 27 exit_program			# If esc is pressed exit the program
+	beq lastKeyPressed 10 restore_map			# If enter is pressed restore world map image
+	move lastKeyPressed $zero					# Ignore input and restore keyboard otherwise
+	enable_keyboard()
+	j busy_waiting_but_worse					# Return to restricted loop
+
+# Restores different parts of the mainscreen depending on which label level was accessed
+# Precondition: None
+# Postcondition: By biggest change: Reload map and map data, Display Map info, Reset key press and enable keyboard
 restore_map:	
-	read_image(mapDirectory)
+	read_image(mapDirectory)					# Redraw world map image
+	print_data(mapDirectory)
 restore_info:
-	display_info(inputInfo)
+	display_info(inputInfo)						# Display input information at the top of display
 restore_keyboard:
 	move lastKeyPressed $zero
-	enable_keyboard()
+	enable_keyboard()							# Remove register stored character and re-enable the keyboard
 	j busy_waiting
 
 exit_program:
-	exit
+	exit										# Exit the program
 
+# All but modified __keyboard_interrupt below is courtesey of Karl Marklund
 .kdata
 	UNHANDLED_EXCEPTION:	.asciiz "===>      Unhandled exception       <===\n\n"
 	UNHANDLED_INTERRUPT: 	.asciiz "===>      Unhandled interrupt       <===\n\n"
@@ -155,9 +169,9 @@ exit_program:
 .ktext 0x80000180
 __kernel_entry_point:
 
-	mfc0 $k0, $13		# Get value in cause register.
+	mfc0 $k0, $13			# Get value in cause register.
 	andi $k1, $k0, 0x00007c	# Mask all but the exception code (bits 2 - 6) to zero.
-	srl  $k1, $k1, 2	# Shift two bits to the right to get the exception code. 
+	srl  $k1, $k1, 2		# Shift two bits to the right to get the exception code. 
 	
 	# Now $k0 = value of cause register
 	#     $k1 = exception code 
@@ -172,9 +186,9 @@ __exception:
 	
 	beq $k1, 12, __overflow_exception	# branch is overflow code 12
 	
-	beq $k1, 4, __bad_address_exception 	#branch to label __bad_address_exception for exception code 4. 	
+	beq $k1, 4, __bad_address_exception #branch to label __bad_address_exception for exception code 4. 	
 	
-	beq $k1, 13, __trap_exception 	#branch to label __trap_exception for exception code 13. 
+	beq $k1, 13, __trap_exception 		#branch to label __trap_exception for exception code 13. 
 	
 __unhandled_exception: 
     	

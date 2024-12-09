@@ -32,7 +32,7 @@ Achieved:
 - (Lower secondary education) Middle school completion rate is 98.7%
 Challenges:
 - 37.28% of the population go on to completing a degree of sorts (Higher Education)
-- 29.51% of 15 y/o’s are underachievers in math
+- 29.51% of 15 y/o's are underachievers in math
 
 Climate Action:
 Achieved:
@@ -41,3 +41,5 @@ Major Challenges Remaining:
 - CO2 emissions from fossil fuel exports is ~158.43 kg per capita
 - CO2 emissions from fossil fuels is about 7.98 tons of CO2 per capita
 - Greenhouse Gas emissions is 7.17 tCO2 per capita
+
+_______________________________________________________________________________________

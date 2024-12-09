@@ -35,3 +35,5 @@ Achieved:
 Major Challenges Remaining:
 - CO2 emissions from fossil fuel exports is ~630.48 kg per capita
 - CO2 emissions from fossil fuels is about 2.25 tons of CO2 per capita
+
+________________________________________________________________________________________

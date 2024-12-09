@@ -33,3 +33,5 @@ Achieved:
 Major Challenges Remaining:
 - Greenhouse Gas emissions is 1.45 tCO2 per capita
 - CO2 emissions from fossil fuels is about 1.8 tons of CO2 per capita
+
+________________________________________________________________________________________

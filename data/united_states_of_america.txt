@@ -25,13 +25,15 @@ Challenges remaining:
 	
 Quality Education:
 Achieved: 
-- 51.26% of people of age 25-34 attain a higher education (i.e. Bachelor’s, Masters, etc.)
+- 51.26% of people of age 25-34 attain a higher education (i.e. Bachelor's, Masters, etc.)
 Challenges:
 - Net primary school enrollment rate is 96.02%
-- Underachievers in math is 33.93% of 15 y/o’s
+- Underachievers in math is 33.93% of 15 y/o's
 
 Climate Action:
 Major Challenges Remaining:
 - CO2 emissions from fossil fuel exports is ~2828.17 kg per capita
 - CO2 emissions from fossil fuels is about 14.99 tons of CO2 per capita
 - Greenhouse Gas emissions is 5.57 tCO2 per capita
+
+______________________________________________________________________________________________

@@ -1,13 +1,11 @@
+# Space Junk Galaxy: Angel
 .include "utils.asm"
 .data
-# 3/4
+# 3/4 time
 # 114 BPM
 # 1/4: 526 ms
 # 1/8: 263 ms
 # 1/6: 132 ms
-# Invariables:
-# 263 between each note
-# Sustain is constant with one exception
 	music1: .word 44 263, 51 263, 56 263, 60 263, 62 263, 67 263, 84 0, 91 0, 44 263, 51 263, 56 263, 60 263, 62 263, 67 263, 0
 	music2: .word 44 263, 51 263, 63 0, 56 263, 58 263, 75 0, 60 263, 63 263, 74 0, 44 263, 51 263, 56 263, 72 0, 58 263, 70 0, 60 263, 68 0, 63 263, 0
 	music3: .word 72 0, 44 263, 51 263, 56 263, 58 263, 60 263, 63 263, 63 0, 44 263, 51 263, 56 263, 58 263, 60 263, 63 263, 0
@@ -31,63 +29,77 @@
 	music20: .word 82 0, 86 0, 91 526, 86 0, 89 0, 91 0, 94 526, 82 0, 86 0, 91 526, 79 0, 82 0, 86 526, 74 0, 79 0, 82 526, 70 0, 74 0, 79 526, 0
 	musicSheet: .word music1, music1, music2, music3, music2, music4, music2, music3, music5, music6, music7, music8, music7, music9, altered7, music8, music10, music11, music12, music13, music14, music15, music12, music13, music14, music16, music17, music18, music17, music19, music20, 0
 
-	.eqv MEASURE 1678	# 3 quarter notes + 100ms
+	.eqv MEASURE 1678	# length of measure in 3/4 time at 114BPM + 100ms
 	.eqv VOLUME 80		# Set the base value for the volume
 	
 .text
-
+# Sets up the music for playing throughout the program
+# Precondition: None
+# Postcondition:
+#		Only if music_setup is directly jumped to
+#		- nextDoubleMeasure is set to first music double measure
+#		Regardless of either label jumped to
+#		- currentNote is set to the first note / data of the music
+#		- sustain is set to default max value
 .globl music_setup
 music_setup:
-	la nextDoubleMeasure musicSheet
+	la nextDoubleMeasure musicSheet				# Load first double measure
 
 .globl double_measure_setup
 double_measure_setup:
-	lw currentNote (nextDoubleMeasure)	# Load start of music
-	beqz currentNote music_setup
-	addi nextDoubleMeasure nextDoubleMeasure 4
-	li sustain MEASURE
+	lw currentNote (nextDoubleMeasure)			# Load first note from current double measure
+	beqz currentNote music_setup				# If first note is zero, end is reached, set music to the start
+	addi nextDoubleMeasure nextDoubleMeasure 4	# Load nextDoubleMeasure
+	li sustain MEASURE							# Set sustain to MEASURE
 	
-	return
+	return										# Return
+
+# Queues up and plays the next note in the program
+# Precondition: 
+# 			-CAN ONLY BE CALLED FROM is_time()
+#			-lastNoteTime, nextNoteTime, nextDoubleMeasure, currentNote, and sustain are all already set
+# Postcondition: Plays next note(s) and sets up the next note and measures if need be
 .globl queue_note
 queue_note:
-	syscall
-	sub $a0 $a0 lastNoteTime
-	blt $a0 nextNoteTime queue_note
+	syscall								# When calling from is_time(), v0 = 30
+	sub $a0 $a0 lastNoteTime			# Get elapsed milliseconds since last note was played
+	blt $a0 nextNoteTime queue_note		# Until elapsed time equals or surpasses nextNoteTime, remain in queue
 
+# Sets up and plays the next set of notes
+# Precondition: nextDoubleMeasure, currentNote, and sustain are all already set
+# Postcondition: Plays the note and updates currentNote, and potentially sustain, and even rarer, nextDoubleMeasure
 .globl note_setup
 note_setup:
-	set_time()
-	lw $a0 (currentNote)			# Load the note
+	set_time()							# Set time since last note played to now
+	lw $a0 (currentNote)				# Load the note and octave
 
-	lw nextNoteTime 4(currentNote)	# Load the time till next note
+	lw nextNoteTime 4(currentNote)		# Load the time till next note
 
-	addi currentNote currentNote 8	# Point to next note
-get_volume:
-	slti $t0 nextNoteTime 263
-	move $t1 $t0
-	mul $t0 $t0 20
-	addi $a3 $t0 VOLUME
-	mul $t1 $t1 -27
-	addi $a2 $t1 32
-get_instrument_and_duration:			# Last tested: 35
-	move $a1 sustain					# Harmony | 3 5
-	# li $a2 3							# Load instrument | 9 24 [32] 55 85 102 (118) 123
+	addi currentNote currentNote 8		# Point to next note
+get_volume_and_instrument:
+	slti $t0 nextNoteTime 263			# If the note is not a base note
+	mul $t1 $t0 20						# Volume increments by 20
+	addi $a3 $t1 VOLUME					# Else volume stays the same
+	mul $t1 $t0 13						# Instrument changes to 45
+	addi $a2 $t1 32						# Else instrument stays at 32
+get_duration:
+	move $a1 sustain					# Set sustain for note
 play_note:
 	li $v0 31							# Load midi play
-	syscall
+	syscall								# Play note
 
-	beqz nextNoteTime note_setup		# If there is no delay for next note, skip sleep call
+	beqz nextNoteTime note_setup		# If there is no delay for next note, immediately set it up
 	
-	sub sustain sustain nextNoteTime	# Remove that from time restarting in the measure
+	sub sustain sustain nextNoteTime	# remove nextNoteTime from sustain value
 
-	ble sustain 100 reset_measure
+	ble sustain 100 reset_measure		# If sustain is completelt drained to only its additional amount, reset it
 
-	return
+	return								# Return
 
 reset_measure:
-	lw $t0 (currentNote)
-	beqz $t0 double_measure_setup
+	lw $t0 (currentNote)				# Load the next note
+	beqz $t0 double_measure_setup		# If the next note is the null terminator, set up the next measure now
 	
-	li sustain MEASURE
+	li sustain MEASURE					# Reset sustain
 
-	return
+	return								# Return

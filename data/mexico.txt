@@ -27,7 +27,7 @@ Achieved:
 - (Lower secondary education) Middle school completion rate is 92.42%
 - Net primary school enrollment rate is 99.66%
 Challenges:
-- 27.27% of people of age 25-34 attain a higher education (i.e. Bachelor’s, Masters, etc.)
+- 27.27% of people of age 25-34 attain a higher education (i.e. Bachelor's, Masters, etc.)
 - Students who are sub-par in math is 65.81% of 15-year-olds
 
 Climate Action:
@@ -35,3 +35,5 @@ Major Challenges Remaining:
 - CO2 emissions from fossil fuels is about 4.03 tons of CO2 per capita
 - Greenhouse Gas emissions is 1.8 tCO2 per capita
 - CO2 emissions from fossil fuel exports is 1258.88 kg per capita
+
+______________________________________________________________________________________________

@@ -34,3 +34,5 @@ Major Challenges Remaining:
 - CO2 emissions from fossil fuel exports is ~9367.9 kg per capita
 - CO2 emissions from fossil fuels is about 11.42 tons of CO2 per capita
 - Greenhouse Gas emissions is 1.57 tCO2 per capita
+
+_______________________________________________________________________________________

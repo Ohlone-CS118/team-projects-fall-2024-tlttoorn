@@ -28,7 +28,7 @@ Challenges remaining:
 Quality Education:
 Achieved: 
 - Net primary school enrollment rate is 91.39%
-- 65% of people of age 25-34 attain a higher education (i.e. Bachelor’s, Masters, etc.)
+- 65% of people of age 25-34 attain a higher education (i.e. Bachelor's, Masters, etc.)
 - Participation in pre-primary school programs is 91.39% of children aged 4-6
 Challenges:
 - (Lower secondary education) Middle school completion rate is 87.24%
@@ -38,3 +38,5 @@ Achieved:
 - Greenhouse Gas emissions is 0.4 tCO2 per capita
 Major Challenges Remaining:
 - CO2 emissions from fossil fuels is about 2 tons of CO2 per capita
+
+___________________________________________________________________________________________
